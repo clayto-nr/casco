@@ -16,6 +16,13 @@ class Usuario(db.Model):
     tipo = db.Column(db.String(20), nullable=False, default='participante')  # Tipo de usuário: lider ou participante
     admin = db.Column(db.Boolean, default=False)  # Permissão de administrador
 
+class Equipe(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(150), nullable=False)
+    lider_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
+    lider = db.relationship('Usuario', backref='equipes')
+
+
 # Criação automática das tabelas
 with app.app_context():
     db.create_all()
@@ -170,6 +177,71 @@ def deletar_usuario(id):
     db.session.commit()
     flash(f'Usuário {usuario.username} foi deletado com sucesso!', 'success')
     return redirect(url_for('gerenciar_usuarios'))
+
+@app.route('/criar_equipe', methods=['GET', 'POST'])
+def criar_equipe():
+    if 'user_id' not in session:
+        flash('Você precisa fazer login primeiro!', 'warning')
+        return redirect(url_for('login'))
+    
+    usuario = Usuario.query.get(session['user_id'])
+    
+    # Verificar se o usuário é líder (admin)
+    if not usuario.admin:
+        flash('Apenas líderes podem criar equipes!', 'danger')
+        return redirect(url_for('dashboard'))
+    
+    if request.method == 'POST':
+        nome = request.form['nome']
+        
+        # Verificar se o nome da equipe já existe
+        equipe_existente = Equipe.query.filter_by(nome=nome).first()
+        if equipe_existente:
+            flash('Já existe uma equipe com esse nome!', 'danger')
+            return redirect(url_for('criar_equipe'))
+        
+        # Criar a nova equipe
+        nova_equipe = Equipe(nome=nome, lider_id=usuario.id)
+        db.session.add(nova_equipe)
+        db.session.commit()
+        
+        flash(f'Equipe "{nome}" criada com sucesso!', 'success')
+        return redirect(url_for('listar_equipes'))
+    
+    return render_template('criar_equipe.html')
+
+@app.route('/minhas_equipes', methods=['GET', 'POST'])
+def minhas_equipes():
+    if 'user_id' not in session:
+        flash('Você precisa fazer login primeiro!', 'warning')
+        return redirect(url_for('login'))
+    
+    usuario = Usuario.query.get(session['user_id'])
+    
+    # Verificar se o usuário é líder (admin)
+    if not usuario.admin:
+        flash('Apenas líderes podem acessar essa página!', 'danger')
+        return redirect(url_for('dashboard'))
+    
+    # Se o método for POST, o usuário está tentando criar uma nova equipe
+    if request.method == 'POST':
+        nome = request.form['nome']
+        
+        # Verificar se o nome da equipe já existe
+        equipe_existente = Equipe.query.filter_by(nome=nome).first()
+        if equipe_existente:
+            flash('Já existe uma equipe com esse nome!', 'danger')
+        else:
+            # Criar a nova equipe
+            nova_equipe = Equipe(nome=nome, lider_id=usuario.id)
+            db.session.add(nova_equipe)
+            db.session.commit()
+            flash(f'Equipe "{nome}" criada com sucesso!', 'success')
+    
+    # Buscar as equipes que o líder criou
+    equipes = Equipe.query.filter_by(lider_id=usuario.id).all()
+    
+    return render_template('minhas_equipes.html', equipes=equipes)
 
 # Executar o app
 if __name__ == '__main__':
