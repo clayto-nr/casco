@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Gerenciar Usuários</title>
+</head>
+<body>
+    <h1>Gerenciar Usuários</h1>
+    <table>
+        <tr>
+            <th>Usuário</th>
+            <th>Email</th>
+            <th>Tipo</th>
+            <th>Admin</th>
+            <th>Ações</th>
+        </tr>
+        {% for usuario in usuarios %}
+        <tr>
+            <form method="post" action="{{ url_for('gerenciar_usuarios') }}">
+                <td>{{ usuario.username }}</td>
+                <td>{{ usuario.email }}</td>
+                <td>
+                    <select name="tipo">
+                        <option value="participante" {% if usuario.tipo == 'participante' %}selected{% endif %}>Participante</option>
+                        <option value="lider" {% if usuario.tipo == 'lider' %}selected{% endif %}>Líder</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="checkbox" name="admin" {% if usuario.admin %}checked{% endif %}>
+                </td>
+                <td>
+                    <input type="hidden" name="user_id" value="{{ usuario.id }}">
+                    <button type="submit">Salvar</button>
+                </td>
+            </form>
+        </tr>
+        {% endfor %}
+    </table>
+    <a href="{{ url_for('dashboard') }}">Voltar ao Dashboard</a>
+</body>
+</html>
