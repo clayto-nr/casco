@@ -16,7 +16,7 @@
         </tr>
         {% for usuario in usuarios %}
         <tr>
-            <form method="post" action="{{ url_for('gerenciar_usuarios') }}">
+            <form method="post" action="{{ url_for('users') }}">
                 <td>{{ usuario.username }}</td>
                 <td>{{ usuario.email }}</td>
                 <td>

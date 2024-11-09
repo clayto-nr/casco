@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convites Pendentes</title>
+</head>
+<body>
+    <h1>Convites Pendentes</h1>
+    
+    {% if convites %}
+        <ul>
+            {% for convite in convites %}
+                <li>
+                    Convite para a equipe "{{ convite.equipe.nome }}"
+                    <form action="{{ url_for('responder_convite', convite_id=convite.id, acao='aceitar') }}" method="POST" style="display: inline;">
+                        <button type="submit">Aceitar</button>
+                    </form>
+                    <form action="{{ url_for('responder_convite', convite_id=convite.id, acao='rejeitar') }}" method="POST" style="display: inline;">
+                        <button type="submit">Rejeitar</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Você não tem convites pendentes.</p>
+    {% endif %}
+
+    <a href="{{ url_for('dashboard') }}">Voltar ao Dashboard</a>
+</body>
+</html>

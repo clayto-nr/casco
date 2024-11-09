@@ -10,7 +10,7 @@
 
     <!-- Formulário para Criar Nova Equipe -->
     <h2>Criar Equipe</h2>
-    <form action="{{ url_for('minhas_equipes') }}" method="POST">
+    <form action="{{ url_for('equipes') }}" method="POST">
         <label for="nome">Nome da Equipe:</label>
         <input type="text" id="nome" name="nome" required>
         <button type="submit">Criar</button>
@@ -32,7 +32,10 @@
     {% if equipes %}
         <ul>
         {% for equipe in equipes %}
-            <li>{{ equipe.nome }}</li>
+            <li>
+                {{ equipe.nome }}
+                <a href="{{ url_for('ver_equipe', id=equipe.id) }}">Ver Mais</a> <!-- Botão Ver Mais -->
+            </li>
         {% endfor %}
         </ul>
     {% else %}

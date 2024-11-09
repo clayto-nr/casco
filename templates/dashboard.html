@@ -7,6 +7,36 @@
 <body>
     <h2>Bem-vindo ao Dashboard, {{ usuario.username }}!</h2>
     <p><strong>Email:</strong> {{ usuario.email }}</p>
+
+    <h3>Equipes que você lidera:</h3>
+    {% if equipes_lideradas %}
+        <ul>
+            {% for equipe in equipes_lideradas %}
+                <li>
+                    {{ equipe.nome }} 
+                    (Líder)
+                    <a href="{{ url_for('ver_equipe', equipe_id=equipe.id) }}">Ver Mais</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Você não lidera nenhuma equipe.</p>
+    {% endif %}
+
+    <h3>Equipes que você participa:</h3>
+    {% if equipes_participantes %}
+        <ul>
+            {% for equipe in equipes_participantes %}
+                <li>
+                    {{ equipe.nome }}
+                    <a href="{{ url_for('ver_equipe', equipe_id=equipe.id) }}">Ver Mais</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Você ainda não participa de nenhuma equipe.</p>
+    {% endif %}
+
     <a href="{{ url_for('logout') }}">Sair</a>
 </body>
 </html>

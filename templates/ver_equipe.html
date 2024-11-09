@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes da Equipe</title>
+</head>
+<body>
+    <h1>Detalhes da Equipe</h1>
+
+    <p><strong>Nome:</strong> {{ equipe.nome }}</p>
+    <p><strong>Data de Criação:</strong> {{ equipe.id }} <!-- Substitua por data real se houver campo para data --></p>
+
+    <h2>Integrantes da Equipe</h2>
+    {% if integrantes %}
+        <ul>
+            {% for integrante in integrantes %}
+                <li>
+                    {{ integrante.username }} - {{ integrante.email }}
+                    {% if is_lider %}
+                        {% if integrante.id == equipe.lider_id %}
+                            (Líder)
+                        {% endif %}
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Esta equipe ainda não tem integrantes.</p>
+    {% endif %}
+
+    {% if is_lider %}
+        <h2>Convidar Membro</h2>
+        <form action="{{ url_for('convidar_membro', equipe_id=equipe.id) }}" method="POST">
+            <label for="email">Email do Membro:</label>
+            <input type="email" id="email" name="email" required>
+            <button type="submit">Enviar Convite</button>
+        </form>
+    {% endif %}
+
+    <a href="{{ url_for('equipes') }}">Voltar para Minhas Equipes</a>
+</body>
+</html>
